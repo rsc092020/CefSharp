@@ -96,6 +96,21 @@ namespace CefSharp.SchemeHandler
 
             var uri = new Uri(request.Url);
 
+            if (uri.Query.Contains("redirect=true"))
+            {
+                var uriBuilder = new UriBuilder(uri)
+                {
+                    Query = "",
+                };
+                //uri.Query
+                var handler = new ResourceHandler
+                {
+                    StatusCode = 302,
+                };
+                handler.Headers.Add("Location", uriBuilder.ToString());
+                return handler;
+            }
+
             if (this.hostName != null && !uri.Host.Equals(this.hostName, StringComparison.OrdinalIgnoreCase))
             {
                 return ResourceHandler.ForErrorMessage(string.Format("HostName {0} does not match the expected HostName of {1}.", uri.Host, this.hostName), HttpStatusCode.NotFound);
